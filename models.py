@@ -2,6 +2,8 @@
 
 import datetime
 
+from flask.ext.bcrypt import generate_password_hash
+from flask.ext.bcrypt import check_password_hash
 #Flask keeps external packages like flask-login under this ext extension
 from flask.ext.login import UserMixin
 
@@ -22,3 +24,15 @@ class User(UserMixin, Model):
         #order_by is a tuple, so you need the trailing comma
         #The dash is indicating decending order
         order_by = ('-joined_at',)
+
+    #Class method decorator to indicate a function that creates an instance of the class
+    @classmethod
+    def create_user(cls, username, email, password, admin=False):
+        try:
+            cls.create(
+                username = username,
+                email = email,
+                password = generate_password_hash(password),
+                is_admin = admin)
+        except IntegrityError:
+            raise ValueError("User already exists")
