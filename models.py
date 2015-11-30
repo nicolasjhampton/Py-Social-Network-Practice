@@ -1,13 +1,16 @@
 """ Basic setup for a user database """
 
-
 import datetime
+
+#Flask keeps external packages like flask-login under this ext extension
+from flask.ext.login import UserMixin
 
 from peewee import *
 
 DATABASE = SqliteDatabase('social.db')
 
-class User(Model):
+#Mixins are small functionality adders, so put them before the main inheritance class
+class User(UserMixin, Model):
     username = CharField(unique=True)
     email = CharField(unique=True)
     password = Charfield(max_length=100)
