@@ -15,12 +15,12 @@ from models import User
 
 def name_exists(form, field):
     """Tests a new username to see if it already exists in the database"""
-    if user.select().where(User.username == field.data).exists():
+    if User.select().where(User.username == field.data).exists():
         raise ValidationError('User with that name already exists.')
 
 def email_exists(form, field):
     """Tests a new email to see if it already exists in the database"""
-    if user.select().where(User.email == field.data).exists():
+    if User.select().where(User.email == field.data).exists():
         raise ValidationError('User with that email already exists.')
 
 class RegisterForm(Form):
@@ -43,14 +43,14 @@ class RegisterForm(Form):
             Email(),
             email_exists
         ])
-    password = PaswordField(
+    password = PasswordField(
         'Password',
         validators = [
             DataRequired(),
             Length(min=6),
             EqualTo('password2', message='Passwords must match') # Note it refers to the variable name, not the label
         ])
-    password2 = PaswordField(
+    password2 = PasswordField(
         'Confirm Password',
         validators = [
             DataRequired()
