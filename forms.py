@@ -1,4 +1,4 @@
-from flask-wtf import Form
+from flask_wtf import Form
 
 #Flask-WTF uses wtforms behind the scenes for the actual form, field, and widget creation.
 from wtforms import PasswordField
