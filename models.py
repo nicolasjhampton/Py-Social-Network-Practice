@@ -26,6 +26,8 @@ class User(UserMixin, Model):
         order_by = ('-joined_at',)
 
     #Class method decorator to indicate a function that creates an instance of the class
+    #This insures that we can do things like hash the password when we make a user
+    #Circumvents the User.create() method (That wont hash the password)
     @classmethod
     def create_user(cls, username, email, password, admin=False):
         try:
@@ -36,3 +38,10 @@ class User(UserMixin, Model):
                 is_admin = admin)
         except IntegrityError:
             raise ValueError("User already exists")
+
+
+def initialize():
+    """Called when the program starts if not called as an imported module."""
+    DATABASE.connect()
+    DATABASE.create_tables([User], safe=True)
+    DATABASE.close()
