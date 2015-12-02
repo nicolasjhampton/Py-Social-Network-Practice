@@ -25,11 +25,23 @@ class User(UserMixin, Model):
         #The dash is indicating decending order
         order_by = ('-joined_at',)
 
+    def get_posts(self):
+        """Get all the posts for the current user."""
+        return Post.select().where (Post.user == self)
+
+    def get_stream(self):
+        """Eventually this will be like a newsfeed of
+        our posts plus all posts of people we are friends with."""
+        return Post.select().where(
+            (Post.user == self)
+        )
+
     #Class method decorator to indicate a function that creates an instance of the class
     #This insures that we can do things like hash the password when we make a user
     #Circumvents the User.create() method (That wont hash the password)
     @classmethod
     def create_user(cls, username, email, password, admin=False):
+        """Secure user creation in the database"""
         try:
             cls.create(
                 username = username,
@@ -38,6 +50,18 @@ class User(UserMixin, Model):
                 is_admin = True)
         except IntegrityError:
             raise ValueError("User already exists")
+
+class Post(Model):
+    timestamp = DateTimeField(default=datetime.datetime.now)
+    # rel_model points to the related Model
+    # related_name is what the rel_model calls this model
+    # These are required for foreign key creation
+    user = ForeignKeyField(rel_model=User, related_name='posts')
+    content = TextField()
+
+    class Meta:
+        database = DATABASE
+        order_by = ('-timestamp',)
 
 
 def initialize():
