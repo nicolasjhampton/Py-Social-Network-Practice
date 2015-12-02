@@ -10,3 +10,13 @@
         {{ field(placeholder=field.label.text) }}
     </div>
 {% endmacro %}
+
+
+{% macro hide_email(User) %}
+  {# split name on @ into username and domain #}
+  {% with name, domain = User.email.split('@') %}
+    {# concatenate first name char, loop over remaining name chars replacing #}
+    {# with '*', the @-sign, and the domain #}
+    {{ name[0] }}{% for letter in name[1:] %}*{% endfor %}@{{ domain }}
+  {% endwith %}
+{% endmacro %}

@@ -6,8 +6,11 @@ from flask import g
 from flask import redirect
 from flask import render_template
 from flask import url_for
+from flask.ext.bcrypt import check_password_hash
 #LoginManager - An appliance to handle user authentication.
 from flask.ext.login import LoginManager
+#login_user - Function to log a user in and set the appropriate cookie so they'll be considered authenticated by Flask-Login
+from flask.ext.login import login_user
 
 import forms
 import models
@@ -59,6 +62,23 @@ def register():
         )
         return redirect(url_for('index'))   #With the user added, we'll redirect to the index page
     return render_template('register.html', form=form)     #If the data doesn't validate, we redirect back to the register page
+
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = models.User.get(models.User.email == form.email.data)
+        except models.DoesNotExist:
+            flash("Your email or password doesn't match!", "error")
+        else:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash("You've been logged in!", "success")
+                return redirect(url_for('index'))
+            else:
+                flash("Your email or password doesn't match!", "error")
+    return render_template('login.html', form=form)
 
 @app.route('/')
 def index():
