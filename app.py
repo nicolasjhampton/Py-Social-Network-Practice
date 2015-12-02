@@ -11,6 +11,8 @@ from flask.ext.bcrypt import check_password_hash
 from flask.ext.login import LoginManager
 #login_user - Function to log a user in and set the appropriate cookie so they'll be considered authenticated by Flask-Login
 from flask.ext.login import login_user
+from flask.ext.login import logout_user
+from flask.ext.login import login_required
 
 import forms
 import models
@@ -79,6 +81,13 @@ def login():
             else:
                 flash("Your email or password doesn't match!", "error")
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("You've been logged out! Come back soon!")
+    return redirect(url_for('index'))
 
 @app.route('/')
 def index():
