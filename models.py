@@ -56,6 +56,7 @@ class Post(Model):
     # rel_model points to the related Model
     # related_name is what the rel_model calls this model
     # These are required for foreign key creation
+    # ForeignKeyField - A field that points to another database record.
     user = ForeignKeyField(rel_model=User, related_name='posts')
     content = TextField()
 

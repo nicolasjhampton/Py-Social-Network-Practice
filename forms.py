@@ -3,6 +3,7 @@ from flask_wtf import Form
 #Flask-WTF uses wtforms behind the scenes for the actual form, field, and widget creation.
 from wtforms import PasswordField
 from wtforms import StringField
+from wtforms import TextAreaField
 from wtforms.validators import DataRequired
 from wtforms.validators import Email
 from wtforms.validators import EqualTo
@@ -68,3 +69,6 @@ class LoginForm(Form):
         validators = [
             DataRequired()
         ])
+
+class PostForm(Form):
+    content = TextAreaField("What's Up?", validators=[DataRequired()])

@@ -7,6 +7,8 @@ from flask import redirect
 from flask import render_template
 from flask import url_for
 from flask.ext.bcrypt import check_password_hash
+
+from flask.ext.login import current_user
 #LoginManager - An appliance to handle user authentication.
 from flask.ext.login import LoginManager
 #login_user - Function to log a user in and set the appropriate cookie so they'll be considered authenticated by Flask-Login
@@ -44,6 +46,7 @@ def before_request():
     """Connect to the database before each request"""
     g.db = models.DATABASE
     g.db.connect()
+    g.user = current_user
 
 #after_request - A decorator to mark a function as running before the response is returned.
 @app.after_request
@@ -88,6 +91,17 @@ def logout():
     logout_user()
     flash("You've been logged out! Come back soon!")
     return redirect(url_for('index'))
+
+@app.route('/new_post', methods=['GET', 'POST'])
+@login_required
+def post():
+    form = form.PostForm()
+    if form.validate_on_submit():
+        models.Post.create(user=g.user._get_current_object(),
+                           content=form.content.data.strip())
+        flash("Message posted: Thanks!", "success")
+        return redirect(url_for('index'))
+    return render_template('post.html', form=form)
 
 @app.route('/')
 def index():
