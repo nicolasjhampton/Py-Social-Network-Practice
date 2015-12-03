@@ -105,7 +105,23 @@ def post():
 
 @app.route('/')
 def index():
-    return 'Hey'
+    stream = models.Post.select().limit(100)
+    return render_template('stream.html', stream=stream)
+
+@app.route('/stream')
+@app.route('/stream/<username>')
+def stream(username=none):
+    template = 'stream.html'
+    if username and username != current_user.username:
+        user = models.User.select().where(models.User.username**username).get() # the ** is the "like" operator (non-case sensitive comparison)
+        stream = user.posts.limit(100)
+    else:
+        stream = current_user.get_stream().limit(100)
+        user = current_user
+    if username:
+        template = 'user_stream.html'
+    return render_template(template, stream=stream, user=user)
+
 
 #This runs the app if this isn't an imported module of another script
 if __name__ == '__main__':
